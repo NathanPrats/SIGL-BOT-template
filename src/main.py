@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord.utils import get
 import discord
 
-intents = discord.Intents(messages=True, guilds=True, members=True)
+intents = discord.Intents(messages=True, guilds=True, members=True, presences=True)
 
 bot = commands.Bot(
     command_prefix="!",  # Change to desired prefix
@@ -87,6 +87,42 @@ async def unmute(ctx, member: discord.Member):
 @bot.command()
 async def ban(ctx, member: discord.Member):
     await member.ban()
+
+@bot.command()
+async def xkcd(ctx):
+    xkcd = random.randrange(1,2521) #2521 is the number of existant xkcd pages
+    await ctx.send('https://xkcd.com/' + str(xkcd))
+
+@bot.command()
+async def poll(ctx, *, text: str):
+    args = text.split('?', 1) #Separate question from emojis
+    question = args[0] + '?' #Recreate the question string
+    args = args[1].split() #Create a list from emojis
+    length = len(args)
+    if (length == 1):
+        await ctx.send('Error, !poll needs at least two emojis to be created')
+    else:
+        poll = await ctx.send("@here " + question)
+        if length == 0:
+            await poll.add_reaction("👍")
+            await poll.add_reaction("👎")
+        else:
+            for i in range(0, length):
+                await poll.add_reaction(args[i])
+
+async def printGrid(grid, ctx):
+    res = grid[0] + ' | ' + grid[1] + ' | ' + grid[2] + '\n' + grid[3] + ' | ' + grid[4] + ' | ' + grid[5] + '\n' + grid[6] + ' | ' + grid[7] + ' | ' + grid[8] + '\n'
+    await ctx.send(res)
+
+@bot.command()
+async def tictactoe(ctx, *, text: str):
+    players = text.split()
+    await ctx.send('Welcome to the game ' + players[0] + ' & ' + players[1])
+    await ctx.send('It\'s ' + players[0] + ' turn to play - Type your tile number')
+    waiting_action = True
+    to_play = True
+    grid = ['-'] * 9                                                                                                   
+    await printGrid(grid, ctx)
 
 
 token = ""
